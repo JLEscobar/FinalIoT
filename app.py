@@ -45,23 +45,21 @@ if uploaded_file is not None:
 
     # Verificar que existen las columnas necesarias
     if "temperatura ESP32" in df1.columns and "humedad ESP32" in df1.columns:
+        # Manejar valores faltantes
+        df1 = df1.dropna(subset=["temperatura ESP32", "humedad ESP32"])
+        
         # Calcular la sensación térmica
         df1["Sensación Térmica"] = df1.apply(
             lambda row: calcular_sensacion_termica(row["temperatura ESP32"], row["humedad ESP32"]), axis=1
         )
         
-        # Selección de visualización
-        st.subheader('Visualización de Datos')
-        variable_a_graficar = st.selectbox(
-            "Selecciona la variable a graficar:",
-            options=["temperatura ESP32", "humedad ESP32", "Sensación Térmica"]
-        )
-        
-        st.line_chart(df1[variable_a_graficar])
-        
-        # Mostrar tabla con sensación térmica
+        # Verificar si la columna fue añadida correctamente
         st.write("Datos con Sensación Térmica incluida:")
         st.write(df1)
+        
+        # Visualización de la sensación térmica
+        st.subheader('Gráfico de Sensación Térmica')
+        st.line_chart(df1["Sensación Térmica"])
     else:
         st.error("El archivo debe incluir las columnas 'temperatura ESP32' y 'humedad ESP32'.")
     
@@ -76,6 +74,10 @@ if uploaded_file is not None:
     filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
     st.subheader("Temperaturas inferiores al valor configurado.")
     st.write(filtrado_df_max)
+
+else:
+    st.warning('Necesitas cargar un archivo CSV.')
+
 
 else:
     # Aquí es donde el bloque `else` debía manejarse correctamente.
