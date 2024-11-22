@@ -64,7 +64,7 @@ if uploaded_file is not None:
         st.write(df1)
     else:
         st.error("El archivo debe incluir las columnas 'temperatura ESP32' y 'humedad ESP32'.")
-
+    
     # Filtrar por temperatura mínima
     min_temp = st.slider('Selecciona la temperatura mínima (°C)', min_value=-10, max_value=45, value=23, key=1)
     filtrado_df_min = df1.query(f"`temperatura ESP32` > {min_temp}")
@@ -76,10 +76,8 @@ if uploaded_file is not None:
     filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
     st.subheader("Temperaturas inferiores al valor configurado.")
     st.write(filtrado_df_max)
+
 else:
+    # Aquí es donde el bloque `else` debía manejarse correctamente.
     st.warning('Necesitas cargar un archivo CSV.')
 
-    st.subheader("Temperaturas inferiores al valor configurado.")
-    st.write(filtrado_df_max)
-else:
-    st.warning('Necesitas cargar un archivo CSV.')
