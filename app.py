@@ -14,10 +14,14 @@ if uploaded_file is not None:
     df1 = pd.read_csv(uploaded_file)
     
     st.subheader('Perfil gráfico de la variable medida.')
-    df1 = df1.set_index('Time')
-    st.line_chart(df1)
+    # Asegurar que la columna 'Time' esté como índice si existe
+    if 'Time' in df1.columns:
+        df1['Time'] = pd.to_datetime(df1['Time'])
+        df1 = df1.set_index('Time')
     
+    st.line_chart(df1)
     st.write(df1)
+    
     st.subheader('Estadísticos básicos de los sensores.')
     st.dataframe(df1["temperatura ESP32"].describe())
     
@@ -41,15 +45,23 @@ if uploaded_file is not None:
 
     # Verificar que existen las columnas necesarias
     if "temperatura ESP32" in df1.columns and "humedad ESP32" in df1.columns:
+        # Calcular la sensación térmica
         df1["Sensación Térmica"] = df1.apply(
             lambda row: calcular_sensacion_termica(row["temperatura ESP32"], row["humedad ESP32"]), axis=1
         )
         
-        st.write("Tabla con Sensación Térmica añadida:")
-        st.write(df1)
+        # Selección de visualización
+        st.subheader('Visualización de Datos')
+        variable_a_graficar = st.selectbox(
+            "Selecciona la variable a graficar:",
+            options=["temperatura ESP32", "humedad ESP32", "Sensación Térmica"]
+        )
         
-        st.subheader('Gráfico de Sensación Térmica')
-        st.line_chart(df1["Sensación Térmica"])
+        st.line_chart(df1[variable_a_graficar])
+        
+        # Mostrar tabla con sensación térmica
+        st.write("Datos con Sensación Térmica incluida:")
+        st.write(df1)
     else:
         st.error("El archivo debe incluir las columnas 'temperatura ESP32' y 'humedad ESP32'.")
 
@@ -62,6 +74,11 @@ if uploaded_file is not None:
     # Filtrar por temperatura máxima
     max_temp = st.slider('Selecciona la temperatura máxima (°C)', min_value=-10, max_value=45, value=30, key=2)
     filtrado_df_max = df1.query(f"`temperatura ESP32` < {max_temp}")
+    st.subheader("Temperaturas inferiores al valor configurado.")
+    st.write(filtrado_df_max)
+else:
+    st.warning('Necesitas cargar un archivo CSV.')
+
     st.subheader("Temperaturas inferiores al valor configurado.")
     st.write(filtrado_df_max)
 else:
