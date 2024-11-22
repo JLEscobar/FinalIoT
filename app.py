@@ -76,10 +76,7 @@ if uploaded_file is not None:
     st.write(filtrado_df_max)
 
 else:
+    # Aquí es donde el bloque else debía manejarse correctamente
     st.warning('Necesitas cargar un archivo CSV.')
 
-
-else:
-    # Aquí es donde el bloque `else` debía manejarse correctamente.
-    st.warning('Necesitas cargar un archivo CSV.')
 
